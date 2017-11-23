@@ -195,46 +195,7 @@ int main()
 		if (loop_stop_flag) {
 			break;
 		}
-	}
-	//img = imread("C:\\Users\\sean\\Desktop\\test.jpg", 1);
-	//Mat* raw_img = new Mat;
-	//*raw_img = img.clone();
-	//img_stack.push(raw_img);
-	//showImg = img.clone();
-	////showImg = img_stack.top().clone();
-	//select.x = select.y = 0;
-	//imshow("img", showImg);
-
-
-	//while (1)
-	//{
-	//	int key = waitKey(10);
-	//	switch (key)
-	//	{  // 一个窗口只能设定一个 鼠标活动函数吗？？ 按下a或者b，key变为指定的值，然后变换 窗口的 鼠标活动函数，接下来key就一直保持-1；直到下一次按键；
-	//	// 所以，绑定鼠标活动函数之后，只要鼠标有活动就会一直调用该函数，直到推出；
-	//	case 'a':
-	//		setMouseCallback("img", A_on_Mouse, 0);
-	//		break;
-	//	case 'b':
-	//		setMouseCallback("img", B_on_Mouse, 0);
-	//		break;
-	//	}
-	//	if (key == ' ') {
-	//		Rect rec_arr[MAX_NUM];
-	//		int temp_count = 0;
-	//		while (!rect_stack.empty()) {
-	//			rec_arr[temp_count++] = *rect_stack.top();
-	//			delete rect_stack.top();
-	//			rect_stack.pop();
-	//		}
-	//		// 关于 存储文件路径，文件名等设置；
-	//		string output_url = output_path + "test.txt";
-	//		obj2file(output_url, rec_arr, temp_count);
-
-	//	}
-	//	if (key == 27 || key == 'q')
-	//		break;
-	//}
+	}	
 	waitKey(0);
 	return 0;
 }
