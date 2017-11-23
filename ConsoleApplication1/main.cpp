@@ -141,6 +141,11 @@ int main()
 				// 关于 存储文件路径，文件名等设置；				
 				obj2file(rec_arr, temp_count,current_file_name);
 				store_capture( rec_arr, temp_count, current_file_name);
+				Rect test_array[15];
+				int test_count = 0;
+				int* test_count_p = &test_count;
+				file2obj(test_array, test_count_p);
+				store_capture(test_array, *test_count_p, "test_file_name");
 				break;
 			}
 			if (key == 27 || key == 'q') {
@@ -187,22 +192,24 @@ int obj2file(Rect* obj_reference, int rect_count, string file_name) {
 	fout.close();
 	fout.open(file_url, ofstream::out | ofstream::app);
 	for (int i = 0; i < rect_count; i++) {
-		fout.write((char *)obj_reference + i, sizeof(*obj_reference));
+		fout.write((char *)(obj_reference + i), sizeof(*obj_reference));
 	}
-	fout.close();
-	/*Rect select2;
-	ifstream fin("C:\\Users\\sean\\Desktop\\output.txt");
-	fin.read((char *)&select2, sizeof(select2));
-	fin.close();
-	cout << "select2 读取完毕" << endl;
-	cout << "select2.x: "<< select2.x<< endl;
-	cout << "select2.y: " << select2.y << endl;
-	cout << "select2.width: " << select2.width << endl;
-	cout << "select2.area: " << select2.area() << endl;*/
+	fout.close();	
 	return 0;
 }
-int file2obj() {
+int file2obj(Rect* rec_arr,int* count) {
 	// change the binary data to obj,and check whether it preicse or not;
+	//string position_dir = output_path
+	Rect select2;
+	int roi_num;
+	ifstream fin("E:\\keti_data\\position_data\\1.dat");
+	fin.read((char *)&roi_num, sizeof(roi_num));
+	*count = roi_num;
+	for (int i = 0; i < roi_num; i++) {
+		fin.read((char *)(rec_arr+i), sizeof(select2));
+	}
+	//fin.read((char *)rec_arr, sizeof(select2)*roi_num);
+	fin.close();
 	return 0;
 }
 
