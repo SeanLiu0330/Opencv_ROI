@@ -56,10 +56,10 @@ void A_on_Mouse(int event, int x, int y, int flags, void*param)//实现画矩形框
 			delete rect_stack.top();
 			rect_stack.pop();
 			img_stack.pop();
-		}
-		Mat* temp = img_stack.top();
-		(*temp).copyTo(img);
-		imshow("img", img);
+			Mat* temp = img_stack.top();
+			(*temp).copyTo(img);
+			imshow("img", img);
+		}		
 	}
 }
 void B_on_Mouse(int event, int x, int y, int flags, void*param)//实现画矩形框并截图  
@@ -136,16 +136,23 @@ int main()
 				while (!rect_stack.empty()) {
 					rec_arr[temp_count++] = *rect_stack.top();
 					delete rect_stack.top();
+					delete img_stack.top();
 					rect_stack.pop();
+					img_stack.pop();
 				}
-				// 关于 存储文件路径，文件名等设置；				
-				obj2file(rec_arr, temp_count,current_file_name);
-				store_capture( rec_arr, temp_count, current_file_name);
-				Rect test_array[15];
-				int test_count = 0;
-				int* test_count_p = &test_count;
-				file2obj(test_array, test_count_p);
-				store_capture(test_array, *test_count_p, "test_file_name");
+				delete img_stack.top();				
+				img_stack.pop();
+				// 关于 存储文件路径，文件名等设置；
+				if (temp_count != 0) {
+					obj2file(rec_arr, temp_count, current_file_name);
+					store_capture(rec_arr, temp_count, current_file_name);
+					Rect test_array[15];
+					//用于检查 存储的position_data是否有效
+					/*int test_count = 0;
+					int* test_count_p = &test_count;
+					file2obj(test_array, test_count_p);
+					store_capture(test_array, *test_count_p, "test_file_name");*/
+				}				
 				break;
 			}
 			if (key == 27 || key == 'q') {
@@ -201,7 +208,7 @@ int file2obj(Rect* rec_arr,int* count) {
 	// change the binary data to obj,and check whether it preicse or not;
 	//string position_dir = output_path
 	Rect select2;
-	int roi_num;
+	int roi_num;	
 	ifstream fin("E:\\keti_data\\position_data\\1.dat");
 	fin.read((char *)&roi_num, sizeof(roi_num));
 	*count = roi_num;
