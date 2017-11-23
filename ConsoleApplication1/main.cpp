@@ -107,7 +107,7 @@ void B_on_Mouse(int event, int x, int y, int flags, void*param)//ÊµÏÖ»­¾ØĞÎ¿ò²¢½
 	}
 }
 
-int main()
+int main1()
 {	
 	//get the file_name_list
 	// get the file_url in a loop
@@ -140,6 +140,7 @@ int main()
 					rect_stack.pop();
 					img_stack.pop();
 				}
+				// ±Èrect_stack¶à³öÒ»¸ö²Ù×÷£»Ó¦ÎªÕâ¸östackÖĞ¶à³öÀ´Ò»¸öÔªËØ
 				delete img_stack.top();				
 				img_stack.pop();
 				// ¹ØÓÚ ´æ´¢ÎÄ¼şÂ·¾¶£¬ÎÄ¼şÃûµÈÉèÖÃ£»
@@ -219,46 +220,109 @@ int file2obj(Rect* rec_arr,int* count) {
 	fin.close();
 	return 0;
 }
-
 void roi_storage(Rect* rect_array, string name_prefix, string storage_dir) {
 	// store the ROI;
 }
-void getfiles(string path, vector<string>& files) {
-	//ÎÄ¼ş¾ä±ú  
-	long   hFile = 0;
-	//ÎÄ¼şĞÅÏ¢£¬ÉùÃ÷Ò»¸ö´æ´¢ÎÄ¼şĞÅÏ¢µÄ½á¹¹Ìå  
-	struct _finddata_t fileinfo;
-	string p;//×Ö·û´®£¬´æ·ÅÂ·¾¶
-	if ((hFile = _findfirst(p.assign(path).append("\\*").c_str(), &fileinfo)) != -1)//Èô²éÕÒ³É¹¦£¬Ôò½øÈë
+
+
+
+int main(){
+	//´ò¿ªÊÓÆµÎÄ¼ş£ºÆäÊµ¾ÍÊÇ½¨Á¢Ò»¸öVideoCapture½á¹¹  
+	VideoCapture capture("E:\\FFOutput\\VID_20171109_163650 - 2.avi");
+	//¼ì²âÊÇ·ñÕı³£´ò¿ª:³É¹¦´ò¿ªÊ±£¬isOpened·µ»Øture  
+	if (!capture.isOpened())
+		cout << "fail to open!" << endl;
+	//»ñÈ¡Õû¸öÖ¡Êı  
+	long totalFrameNumber = capture.get(CV_CAP_PROP_FRAME_COUNT);
+	cout << "Õû¸öÊÓÆµ¹²" << totalFrameNumber << "Ö¡" << endl;
+
+
+	//ÉèÖÃ¿ªÊ¼Ö¡()  
+	long frameToStart = 300;
+	capture.set(CV_CAP_PROP_POS_FRAMES, frameToStart);
+	cout << "´ÓµÚ" << frameToStart << "Ö¡¿ªÊ¼¶Á" << endl;
+
+
+	//ÉèÖÃ½áÊøÖ¡  
+	int frameToStop = 400;
+
+	if (frameToStop < frameToStart)
 	{
-		do
-		{
-			//Èç¹ûÊÇÄ¿Â¼,µü´úÖ®£¨¼´ÎÄ¼ş¼ĞÄÚ»¹ÓĞÎÄ¼ş¼Ğ£©  
-			if ((fileinfo.attrib &  _A_SUBDIR))
-			{
-				//ÎÄ¼şÃû²»µÈÓÚ"."&&ÎÄ¼şÃû²»µÈÓÚ".."
-				//.±íÊ¾µ±Ç°Ä¿Â¼
-				//..±íÊ¾µ±Ç°Ä¿Â¼µÄ¸¸Ä¿Â¼
-				//ÅĞ¶ÏÊ±£¬Á½Õß¶¼ÒªºöÂÔ£¬²»È»¾ÍÎŞÏŞµİ¹éÌø²»³öÈ¥ÁË£¡
-				if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
-					getfiles(p.assign(path).append("\\").append(fileinfo.name), files);
-			}
-			//Èç¹û²»ÊÇ,¼ÓÈëÁĞ±í  
-			else
-			{
-				files.push_back(p.assign(path).append("\\").append(fileinfo.name));
-			}
-		} while (_findnext(hFile, &fileinfo) == 0);
-		//_findcloseº¯Êı½áÊø²éÕÒ
-		_findclose(hFile);
-		return;
+		cout << "½áÊøÖ¡Ğ¡ÓÚ¿ªÊ¼Ö¡£¬³ÌĞò´íÎó£¬¼´½«ÍË³ö£¡" << endl;
+		return -1;
 	}
-}
-void main5() {
-	char* path = "E:\\test_dir_can_delete";
-	vector<string> files;
-	getfiles(path, files);
+	else
+	{
+		cout << "½áÊøÖ¡Îª£ºµÚ" << frameToStop << "Ö¡" << endl;
+	}
 
-}
 
+	//»ñÈ¡Ö¡ÂÊ  
+	double rate = capture.get(CV_CAP_PROP_FPS);
+	cout << "Ö¡ÂÊÎª:" << rate << endl;
+
+
+
+	//¶¨ÒåÒ»¸öÓÃÀ´¿ØÖÆ¶ÁÈ¡ÊÓÆµÑ­»·½áÊøµÄ±äÁ¿  
+	bool stop = false;
+	//³ĞÔØÃ¿Ò»Ö¡µÄÍ¼Ïñ  
+	Mat frame;
+	//ÏÔÊ¾Ã¿Ò»Ö¡µÄ´°¿Ú  
+	namedWindow("Extracted frame");
+	//Á½Ö¡¼äµÄ¼ä¸ôÊ±¼ä:  
+	//int delay = 1000/rate;  
+	int delay = 1000 / rate;
+
+
+	//ÀûÓÃwhileÑ­»·¶ÁÈ¡Ö¡  
+	//currentFrameÊÇÔÚÑ­»·ÌåÖĞ¿ØÖÆ¶ÁÈ¡µ½Ö¸¶¨µÄÖ¡ºóÑ­»·½áÊøµÄ±äÁ¿  
+	long currentFrame = frameToStart;
+
+
+	//ÂË²¨Æ÷µÄºË  
+	int kernel_size = 3;
+	Mat kernel = Mat::ones(kernel_size, kernel_size, CV_32F) / (float)(kernel_size*kernel_size);
+
+	while (!stop)
+	{
+		//¶ÁÈ¡ÏÂÒ»Ö¡  
+		if (!capture.read(frame))
+		{
+			cout << "¶ÁÈ¡ÊÓÆµÊ§°Ü" << endl;
+			return -1;
+		}
+
+		//ÕâÀï¼ÓÂË²¨³ÌĞò  
+		// ÕâÀï ´æÔÚÒ»¸öÎÊÌâ£º  capture.read »ñÈ¡µÄ ÊÓÆµµÄÃ¿Ö¡¶¼´æ´¢ÔÚ frameÕâ¸ö±äÁ¿ÖĞ£»º¯ÊıËµÃ÷ÖĞÖ¸³ö£¬Õâ¸ö±äÁ¿ÊÇ²»ÄÜ release»òÕßÊÇ modifyµÄ£»ËùÒÔ£¿£¿£¿ÕâÀï¶ÔÆäÊ¹ÓÃÂË²¨Æ÷ÊÇ£¿£¿£¿£¿
+		imshow("Extracted frame", frame);
+		filter2D(frame, frame, -1, kernel);
+
+		imshow("after filter", frame);
+		cout << "ÕıÔÚ¶ÁÈ¡µÚ" << currentFrame << "Ö¡" << endl;
+		//waitKey(int delay=0)µ±delay ¡Ü 0Ê±»áÓÀÔ¶µÈ´ı£»µ±delay>0Ê±»áµÈ´ıdelayºÁÃë  
+		//µ±Ê±¼ä½áÊøÇ°Ã»ÓĞ°´¼ü°´ÏÂÊ±£¬·µ»ØÖµÎª-1£»·ñÔò·µ»Ø°´¼ü  
+
+
+		int c = waitKey(delay);
+		//°´ÏÂESC»òÕßµ½´ïÖ¸¶¨µÄ½áÊøÖ¡ºóÍË³ö¶ÁÈ¡ÊÓÆµ  
+		if ((char)c == 27 || currentFrame > frameToStop)
+		{
+			stop = true;
+		}
+		//°´ÏÂ°´¼üºó»áÍ£ÁôÔÚµ±Ç°Ö¡£¬µÈ´ıÏÂÒ»´Î°´¼ü  
+		if (c >= 0)
+		{
+			waitKey(0);
+		}
+		currentFrame++;
+
+	}
+	//¹Ø±ÕÊÓÆµÎÄ¼ş  
+	capture.release();
+	waitKey(0);
+	return 0;
+}
+//class CaptureROI {
+//	public
+//};
 // tianjia yongyu ceshi de wenzi
