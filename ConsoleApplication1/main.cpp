@@ -107,8 +107,12 @@ void B_on_Mouse(int event, int x, int y, int flags, void*param)//ÊµÏÖ»­¾ØĞÎ¿ò²¢½
 	}
 }
 
-int main1()
+int main()
 {	
+	if (DECOMPOSE_FLAG) {
+		video_decompose();
+		return 2;
+	}
 	//get the file_name_list
 	// get the file_url in a loop
 	string file_list[1000]; // Õâ¸öÊÇ½èÖú python»ñµÃµÄ ÎÄ¼şÃû Ä¿Â¼£¬ÒÔÒ»¸öÊı×éµÄĞÎÊ½Ìá¹©¸øÕâ¸öº¯Êı
@@ -226,7 +230,7 @@ void roi_storage(Rect* rect_array, string name_prefix, string storage_dir) {
 
 
 
-int main(){
+int video_decompose(){
 	//´ò¿ªÊÓÆµÎÄ¼ş£ºÆäÊµ¾ÍÊÇ½¨Á¢Ò»¸öVideoCapture½á¹¹  
 	VideoCapture capture("E:\\FFOutput\\VID_20171109_163650 - 2.avi");
 	//¼ì²âÊÇ·ñÕı³£´ò¿ª:³É¹¦´ò¿ªÊ±£¬isOpened·µ»Øture  
@@ -235,17 +239,12 @@ int main(){
 	//»ñÈ¡Õû¸öÖ¡Êı  
 	long totalFrameNumber = capture.get(CV_CAP_PROP_FRAME_COUNT);
 	cout << "Õû¸öÊÓÆµ¹²" << totalFrameNumber << "Ö¡" << endl;
-
-
 	//ÉèÖÃ¿ªÊ¼Ö¡()  
 	long frameToStart = 300;
 	capture.set(CV_CAP_PROP_POS_FRAMES, frameToStart);
 	cout << "´ÓµÚ" << frameToStart << "Ö¡¿ªÊ¼¶Á" << endl;
-
-
 	//ÉèÖÃ½áÊøÖ¡  
 	int frameToStop = 400;
-
 	if (frameToStop < frameToStart)
 	{
 		cout << "½áÊøÖ¡Ğ¡ÓÚ¿ªÊ¼Ö¡£¬³ÌĞò´íÎó£¬¼´½«ÍË³ö£¡" << endl;
@@ -255,14 +254,9 @@ int main(){
 	{
 		cout << "½áÊøÖ¡Îª£ºµÚ" << frameToStop << "Ö¡" << endl;
 	}
-
-
 	//»ñÈ¡Ö¡ÂÊ  
 	double rate = capture.get(CV_CAP_PROP_FPS);
 	cout << "Ö¡ÂÊÎª:" << rate << endl;
-
-
-
 	//¶¨ÒåÒ»¸öÓÃÀ´¿ØÖÆ¶ÁÈ¡ÊÓÆµÑ­»·½áÊøµÄ±äÁ¿  
 	bool stop = false;
 	//³ĞÔØÃ¿Ò»Ö¡µÄÍ¼Ïñ  
@@ -272,37 +266,26 @@ int main(){
 	//Á½Ö¡¼äµÄ¼ä¸ôÊ±¼ä:  
 	//int delay = 1000/rate;  
 	int delay = 1000 / rate;
-
-
 	//ÀûÓÃwhileÑ­»·¶ÁÈ¡Ö¡  
 	//currentFrameÊÇÔÚÑ­»·ÌåÖĞ¿ØÖÆ¶ÁÈ¡µ½Ö¸¶¨µÄÖ¡ºóÑ­»·½áÊøµÄ±äÁ¿  
-	long currentFrame = frameToStart;
-
-
-	//ÂË²¨Æ÷µÄºË  
-	int kernel_size = 3;
-	Mat kernel = Mat::ones(kernel_size, kernel_size, CV_32F) / (float)(kernel_size*kernel_size);
-
+	long currentFrame = frameToStart; 
+	
 	while (!stop)
 	{
+		string img_write_url = decompose_path + to_string(currentFrame) + ".jpg";
 		//¶ÁÈ¡ÏÂÒ»Ö¡  
 		if (!capture.read(frame))
 		{
 			cout << "¶ÁÈ¡ÊÓÆµÊ§°Ü" << endl;
 			return -1;
 		}
-
 		//ÕâÀï¼ÓÂË²¨³ÌĞò  
 		// ÕâÀï ´æÔÚÒ»¸öÎÊÌâ£º  capture.read »ñÈ¡µÄ ÊÓÆµµÄÃ¿Ö¡¶¼´æ´¢ÔÚ frameÕâ¸ö±äÁ¿ÖĞ£»º¯ÊıËµÃ÷ÖĞÖ¸³ö£¬Õâ¸ö±äÁ¿ÊÇ²»ÄÜ release»òÕßÊÇ modifyµÄ£»ËùÒÔ£¿£¿£¿ÕâÀï¶ÔÆäÊ¹ÓÃÂË²¨Æ÷ÊÇ£¿£¿£¿£¿
-		imshow("Extracted frame", frame);
-		filter2D(frame, frame, -1, kernel);
-
-		imshow("after filter", frame);
+		imwrite(img_write_url, frame);
+		imshow("Extracted frame", frame);		
 		cout << "ÕıÔÚ¶ÁÈ¡µÚ" << currentFrame << "Ö¡" << endl;
 		//waitKey(int delay=0)µ±delay ¡Ü 0Ê±»áÓÀÔ¶µÈ´ı£»µ±delay>0Ê±»áµÈ´ıdelayºÁÃë  
 		//µ±Ê±¼ä½áÊøÇ°Ã»ÓĞ°´¼ü°´ÏÂÊ±£¬·µ»ØÖµÎª-1£»·ñÔò·µ»Ø°´¼ü  
-
-
 		int c = waitKey(delay);
 		//°´ÏÂESC»òÕßµ½´ïÖ¸¶¨µÄ½áÊøÖ¡ºóÍË³ö¶ÁÈ¡ÊÓÆµ  
 		if ((char)c == 27 || currentFrame > frameToStop)
