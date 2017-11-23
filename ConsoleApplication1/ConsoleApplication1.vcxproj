@@ -150,6 +150,7 @@
     <ClCompile Include="extra_code.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="file_name_array.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

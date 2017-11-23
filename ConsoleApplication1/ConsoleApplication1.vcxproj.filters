@@ -26,5 +26,8 @@
     <ClInclude Include="main.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="file_name_array.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

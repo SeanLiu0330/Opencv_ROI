@@ -1,5 +1,5 @@
 #include "main.h"
-
+#include "file_name_array.h"
 //寻找 绝对值 最小的 数值
 int mini_abs(int a, int b) {
 	return abs(a) <= abs(b) ? a : b;
@@ -116,7 +116,7 @@ int main()
 	//get the file_name_list
 	// get the file_url in a loop
 	string file_list[1000]; // 这个是借助 python获得的 文件名 目录，以一个数组的形式提供给这个函数
-	vector<string> file_vector = {"1.jpg","2.jpg","3.jpg"};
+	vector<string> file_vector = FILE_NAME_ARRAY;
 	for (vector<string>::iterator iter = file_vector.begin(); iter != file_vector.end(); iter++) {
 		//Mat img, showImg;
 		string current_file_name = *iter;		

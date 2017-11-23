@@ -30,7 +30,7 @@ Point last_p1, last_p2; // ºÍ Mat ÀàĞÍ²»Ò»Ñù£¬Mat²»ÄÜÊ¹ÓÃµÈºÅ½øĞĞ¸³Öµ£¬·ñÔòµÄ»°µ
 
 #define output_path  "E:\\keti_data\\position_data\\"  // ´æ´¢ Î»ÖÃÊı¾İÎÄ¼ş
 #define fig_output_path  "E:\\keti_data\\rect_fig\\"  // ´æ´¢²Ã¼ôºÃµÄÍ¼Æ¬
-#define raw_fig_path  "E:\\keti_data\\raw_fig\\"    // Ô­Ê¼Í¼Æ¬Â·¾¶
+#define raw_fig_path  "E:\\keti_data\\decompose_fig\\"    // Ô­Ê¼Í¼Æ¬Â·¾¶
 #define decompose_path "E:\\keti_data\\decompose_fig\\"
 #define DECOMPOSE_FLAG 0
 
