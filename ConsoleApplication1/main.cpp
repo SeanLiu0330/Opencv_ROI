@@ -1,37 +1,4 @@
-#include<iostream>
-#include<core/core.hpp>
-#include<highgui/highgui.hpp>
-#include <opencv2/core/core.hpp>  
-#include <opencv2/highgui/highgui.hpp>  
-#include <opencv2/imgproc/imgproc.hpp>  
-#include <iostream>  
-#include <cmath>
-#include <stack>
-#include <vector>
-#include <string>
-#include <opencv2/opencv.hpp>  
-#include <io.h>
-
-
-
-using namespace std;
-using namespace cv;
-//using namespace System;
-//using namespace std::IO;
-
-#define MAX_NUM 15
-
-Rect select;
-bool select_flag = false;
-Mat img, showImg;
-stack<Mat*> img_stack;//¿ÕÕ»
-stack<Rect*> rect_stack;// ÓÃÓÚ´æ´¢¸úÃ¿¸ö¾ØĞÎ¶ÔÓ¦µÄ Rect±äÁ¿£»
-Point last_p1, last_p2; // ºÍ Mat ÀàĞÍ²»Ò»Ñù£¬Mat²»ÄÜÊ¹ÓÃµÈºÅ½øĞĞ¸³Öµ£¬·ñÔòµÄ»°µÈºÅÁ½¶Ë¹²Ïí´æ´¢¿Õ¼ä£¬µ«ÊÇPoint¿ÉÒÔ£»
-
-#define output_path  "E:\\keti_data\\position_data\\"  // ´æ´¢ Î»ÖÃÊı¾İÎÄ¼ş
-#define fig_output_path  "E:\\keti_data\\rect_fig\\"  // ´æ´¢²Ã¼ôºÃµÄÍ¼Æ¬
-#define raw_fig_path  "E:\\keti_data\\raw_fig\\"    // Ô­Ê¼Í¼Æ¬Â·¾¶
-int obj2file(string file_url, Rect* obj_reference, int rect_count);
+#include "main.h"
 
 //Ñ°ÕÒ ¾ø¶ÔÖµ ×îĞ¡µÄ ÊıÖµ
 int mini_abs(int a, int b) {
@@ -119,6 +86,7 @@ void B_on_Mouse(int event, int x, int y, int flags, void*param)//ÊµÏÖ»­¾ØĞÎ¿ò²¢½
 			p2 = Point(x, y);
 			rectangle(showImg, p1, p2, Scalar(0, 255, 0), 2);
 			imshow("img", showImg);
+			
 		}
 	}
 	break;
@@ -200,148 +168,6 @@ int main()
 	return 0;
 }
 
-
-int main2()
-{
-	//´ò¿ªÊÓÆµÎÄ¼ş£ºÆäÊµ¾ÍÊÇ½¨Á¢Ò»¸öVideoCapture½á¹¹  
-	VideoCapture capture("E:\\FFOutput\\VID_20171109_163650 - 2.avi");
-	//¼ì²âÊÇ·ñÕı³£´ò¿ª:³É¹¦´ò¿ªÊ±£¬isOpened·µ»Øture  
-	if (!capture.isOpened())
-		cout << "fail to open!" << endl;
-	//»ñÈ¡Õû¸öÖ¡Êı  
-	long totalFrameNumber = capture.get(CV_CAP_PROP_FRAME_COUNT);
-	cout << "Õû¸öÊÓÆµ¹²" << totalFrameNumber << "Ö¡" << endl;
-
-
-	//ÉèÖÃ¿ªÊ¼Ö¡()  
-	long frameToStart = 300;
-	capture.set(CV_CAP_PROP_POS_FRAMES, frameToStart);
-	cout << "´ÓµÚ" << frameToStart << "Ö¡¿ªÊ¼¶Á" << endl;
-
-
-	//ÉèÖÃ½áÊøÖ¡  
-	int frameToStop = 400;
-
-	if (frameToStop < frameToStart)
-	{
-		cout << "½áÊøÖ¡Ğ¡ÓÚ¿ªÊ¼Ö¡£¬³ÌĞò´íÎó£¬¼´½«ÍË³ö£¡" << endl;
-		return -1;
-	}
-	else
-	{
-		cout << "½áÊøÖ¡Îª£ºµÚ" << frameToStop << "Ö¡" << endl;
-	}
-
-
-	//»ñÈ¡Ö¡ÂÊ  
-	double rate = capture.get(CV_CAP_PROP_FPS);
-	cout << "Ö¡ÂÊÎª:" << rate << endl;
-
-
-
-	//¶¨ÒåÒ»¸öÓÃÀ´¿ØÖÆ¶ÁÈ¡ÊÓÆµÑ­»·½áÊøµÄ±äÁ¿  
-	bool stop = false;
-	//³ĞÔØÃ¿Ò»Ö¡µÄÍ¼Ïñ  
-	Mat frame;
-	//ÏÔÊ¾Ã¿Ò»Ö¡µÄ´°¿Ú  
-	namedWindow("Extracted frame");
-	//Á½Ö¡¼äµÄ¼ä¸ôÊ±¼ä:  
-	//int delay = 1000/rate;  
-	int delay = 1000 / rate;
-
-
-	//ÀûÓÃwhileÑ­»·¶ÁÈ¡Ö¡  
-	//currentFrameÊÇÔÚÑ­»·ÌåÖĞ¿ØÖÆ¶ÁÈ¡µ½Ö¸¶¨µÄÖ¡ºóÑ­»·½áÊøµÄ±äÁ¿  
-	long currentFrame = frameToStart;
-
-
-	//ÂË²¨Æ÷µÄºË  
-	int kernel_size = 3;
-	Mat kernel = Mat::ones(kernel_size, kernel_size, CV_32F) / (float)(kernel_size*kernel_size);
-
-	while (!stop)
-	{
-		//¶ÁÈ¡ÏÂÒ»Ö¡  
-		if (!capture.read(frame))
-		{
-			cout << "¶ÁÈ¡ÊÓÆµÊ§°Ü" << endl;
-			return -1;
-		}
-
-		//ÕâÀï¼ÓÂË²¨³ÌĞò  
-		// ÕâÀï ´æÔÚÒ»¸öÎÊÌâ£º  capture.read »ñÈ¡µÄ ÊÓÆµµÄÃ¿Ö¡¶¼´æ´¢ÔÚ frameÕâ¸ö±äÁ¿ÖĞ£»º¯ÊıËµÃ÷ÖĞÖ¸³ö£¬Õâ¸ö±äÁ¿ÊÇ²»ÄÜ release»òÕßÊÇ modifyµÄ£»ËùÒÔ£¿£¿£¿ÕâÀï¶ÔÆäÊ¹ÓÃÂË²¨Æ÷ÊÇ£¿£¿£¿£¿
-		imshow("Extracted frame", frame);
-		filter2D(frame, frame, -1, kernel);
-
-		imshow("after filter", frame);
-		cout << "ÕıÔÚ¶ÁÈ¡µÚ" << currentFrame << "Ö¡" << endl;
-		//waitKey(int delay=0)µ±delay ¡Ü 0Ê±»áÓÀÔ¶µÈ´ı£»µ±delay>0Ê±»áµÈ´ıdelayºÁÃë  
-		//µ±Ê±¼ä½áÊøÇ°Ã»ÓĞ°´¼ü°´ÏÂÊ±£¬·µ»ØÖµÎª-1£»·ñÔò·µ»Ø°´¼ü  
-
-
-		int c = waitKey(delay);
-		//°´ÏÂESC»òÕßµ½´ïÖ¸¶¨µÄ½áÊøÖ¡ºóÍË³ö¶ÁÈ¡ÊÓÆµ  
-		if ((char)c == 27 || currentFrame > frameToStop)
-		{
-			stop = true;
-		}
-		//°´ÏÂ°´¼üºó»áÍ£ÁôÔÚµ±Ç°Ö¡£¬µÈ´ıÏÂÒ»´Î°´¼ü  
-		if (c >= 0)
-		{
-			waitKey(0);
-		}
-		currentFrame++;
-
-	}
-	//¹Ø±ÕÊÓÆµÎÄ¼ş  
-	capture.release();
-	waitKey(0);
-	return 0;
-}
-int main1()
-
-{
-
-	//¶ÁÈëÍ¼Æ¬£¬×¢ÒâÍ¼Æ¬Â·¾¶
-
-	Mat image = imread("C:\\Users\\sean\\Desktop\\test.PNG");
-
-	//Í¼Æ¬¶ÁÈë³É¹¦Óë·ñÅĞ¶¨
-
-	if (!image.data)
-
-	{
-
-		cout << "you idiot£¡where did you hide lena£¡" << endl;
-
-		//µÈ´ı°´¼ü
-
-		system("pause");
-
-		return -1;
-
-	}
-
-	//´´½¨Ò»¸öÃû×ÖÎª¡°Lena¡±µÄÍ¼ÏñÏÔÊ¾´°¿Ú£¬£¨²»ÌáÇ°ÉùÃ÷Ò²¿ÉÒÔ£©
-
-	namedWindow("Lena", 1);
-
-	//ÏÔÊ¾Í¼Ïñ
-
-	imshow("Lena", image);
-
-	//µÈ´ı°´¼ü
-
-	waitKey();
-
-	return 0;
-
-}
-
-
-#include<iostream>  
-#include<fstream>  
-#include<string.h>  
 int obj2file(string file_url, Rect* obj_reference, int rect_count) {
 	// ¹ØÓÚ  c++ Êı¾İ¶ÔÏóÓÃÎÄ¼ş½øĞĞ´æ´¢µÄ·½·¨£º
 	// Ö±½Ó½« Êı¾İ¶ÔÏóµÄÖ¸Õë´«µİ¸ø Êä³öÁ÷£¬Ö¸¶¨´óĞ¡Ö®ºó£¬Ö±½ÓĞ´ÈëÎÄ¼ş¼´¿É£»
