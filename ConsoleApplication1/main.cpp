@@ -115,33 +115,21 @@ int main()
 	vector<string> file_vector = {"1.jpg","2.jpg","3.jpg"};
 	for (vector<string>::iterator iter = file_vector.begin(); iter != file_vector.end(); iter++) {
 		//Mat img, showImg;
-		string current_file_name = *iter;
-		string current_file_out_path = fig_output_path + current_file_name;
+		string current_file_name = *iter;		
 		string current_file_path = raw_fig_path + current_file_name;
 		int loop_stop_flag = 0;
 		img = imread(current_file_path, 1);
 		Mat* raw_img = new Mat;
 		*raw_img = img.clone();
 		img_stack.push(raw_img);
-		showImg = img.clone();
-		//showImg = img_stack.top().clone();
+		showImg = img.clone();		
 		select.x = select.y = 0;
 		imshow("img", showImg);
 
 		while (1)
 		{
 			int key = waitKey(10);
-			setMouseCallback("img", A_on_Mouse, 0);
-			//switch (key)
-			//{  // 一个窗口只能设定一个 鼠标活动函数吗？？ 按下a或者b，key变为指定的值，然后变换 窗口的 鼠标活动函数，接下来key就一直保持-1；直到下一次按键；
-			//   // 所以，绑定鼠标活动函数之后，只要鼠标有活动就会一直调用该函数，直到推出；
-			//case 'a':
-			//	setMouseCallback("img", A_on_Mouse, 0);
-			//	break;
-			//case 'b':
-			//	setMouseCallback("img", B_on_Mouse, 0);
-			//	break;
-			//}
+			setMouseCallback("img", A_on_Mouse, 0);	
 			if (key == ' ') {
 				Rect rec_arr[MAX_NUM];
 				int temp_count = 0;
@@ -150,9 +138,9 @@ int main()
 					delete rect_stack.top();
 					rect_stack.pop();
 				}
-				// 关于 存储文件路径，文件名等设置；
-				string output_url = output_path + current_file_name;
-				obj2file(output_url, rec_arr, temp_count);
+				// 关于 存储文件路径，文件名等设置；				
+				obj2file(rec_arr, temp_count,current_file_name);
+				store_capture( rec_arr, temp_count, current_file_name);
 				break;
 			}
 			if (key == 27 || key == 'q') {
@@ -168,12 +156,31 @@ int main()
 	return 0;
 }
 
-int obj2file(string file_url, Rect* obj_reference, int rect_count) {
+void store_capture(Rect* rec_arr,int capture_num,string file_name) {
+	char num2char[MAX_NUM] = {'0','1','2','3','4','5','6','7','8','9','10','11','12','13','14' };
+	size_t suffix_position = file_name.find_last_of('.');
+	string file_name_without_suffix = file_name.substr(0, suffix_position);
+	cout << "file_name_without_suffix: " << file_name_without_suffix << endl;
+	for (int i = 0; i < capture_num; i++) {
+		string current_file_out_path = fig_output_path + file_name_without_suffix + '_' + num2char[i]+".jpg";
+		cout << "  file_name_for_roi_of_this_pic: " << current_file_out_path << endl;
+		Rect roi = rec_arr[i];
+		if (roi.width && roi.height) {
+			Mat roi_img = img(roi);
+			imwrite(current_file_out_path,roi_img);
+		}
+	}
+}
+int obj2file(Rect* obj_reference, int rect_count, string file_name) {
 	// 关于  c++ 数据对象用文件进行存储的方法：
 	// 直接将 数据对象的指针传递给 输出流，指定大小之后，直接写入文件即可；
 	// 读入的过程同样只需要 传递给 读取函数一个 变量指针，然后指定好 需要读取的变量的大小；
 	// 整个过程就相当于将内存中的 数据原原本本的移动到了 文件中；
-	//Rect select = Rect(Point(1, 1), Point(4, 4));
+	//Rect select = Rect(Point(1, 1), Point(4, 4));	
+	size_t suffix_position = file_name.find_last_of('.');
+	string file_name_without_suffix = file_name.substr(0, suffix_position)+".dat";
+	string file_url = output_path + file_name_without_suffix;
+
 	ofstream fout;
 	fout.open(file_url, ofstream::out | ofstream::trunc);
 	fout.write((char *)&rect_count, sizeof(rect_count));

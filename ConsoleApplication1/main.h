@@ -31,4 +31,5 @@ Point last_p1, last_p2; // ºÍ Mat ÀàĞÍ²»Ò»Ñù£¬Mat²»ÄÜÊ¹ÓÃµÈºÅ½øĞĞ¸³Öµ£¬·ñÔòµÄ»°µ
 #define output_path  "E:\\keti_data\\position_data\\"  // ´æ´¢ Î»ÖÃÊı¾İÎÄ¼ş
 #define fig_output_path  "E:\\keti_data\\rect_fig\\"  // ´æ´¢²Ã¼ôºÃµÄÍ¼Æ¬
 #define raw_fig_path  "E:\\keti_data\\raw_fig\\"    // Ô­Ê¼Í¼Æ¬Â·¾¶
-int obj2file(string file_url, Rect* obj_reference, int rect_count);
+int obj2file(Rect* obj_reference, int rect_count, string file_name);
+void store_capture(Rect* rec_arr, int capture_num, string file_name);
