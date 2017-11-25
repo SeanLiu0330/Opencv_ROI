@@ -115,33 +115,48 @@ int main()
 	}
 	//get the file_name_list
 	// get the file_url in a loop
-	ifstream file_name_str_file("E:\\keti_data\\file_name_str.txt");
+	ifstream file_name_str_file(file_name_str_path);
 	string name_str_per_line;
 	int line_count = 0;
+	int current_img_count = 0;
+	int last_final_position = 0;
+	if (READ_OUTER_POSITION) {
+		// 只有要求读取外面的 position时，才读取
+		ifstream outer_position(IMAGE_POSITION_FILE_PATH);
+		outer_position.read((char*)&last_final_position, sizeof(last_final_position));
+	}
+	// 逐行读取 文件名，最好
 	while (!file_name_str_file.eof()) {
+		int loop_stop_flag = 0;
 		line_count++;
 		vector<string> file_vector;
 		getline(file_name_str_file, name_str_per_line);
 		string::size_type final_comma_position = name_str_per_line.find_last_of(',');
+		// 获取每行的 img文件名的vector;size==300
 		while (!name_str_per_line.empty()) {
 			string::size_type temp_position_4_comma = name_str_per_line.find_first_of(',');
 			//string test = name_str_per_line.substr(final_comma_position+1);
 			string single_file_name = name_str_per_line.substr(0, temp_position_4_comma);
 			file_vector.push_back(single_file_name);
 			name_str_per_line = name_str_per_line.substr(temp_position_4_comma + 1);			
-		}		
+		}	
+		current_img_count += (line_count-1)*VECTOR_SIZE;
 		//continue;
 		string file_list[1000]; // 这个是借助 python获得的 文件名 目录，以一个数组的形式提供给这个函数	
 		int start_point = 0;
 		for (vector<string>::iterator iter = file_vector.begin(); iter != file_vector.end(); iter++) {
-			//Mat img, showImg;
+			// Mat img, showImg;
+			// 记录当前处理图片的位置
+			current_img_count++;
+			ofstream img_position_recorder(IMAGE_POSITION_FILE_PATH);
+			img_position_recorder.write((char*)&current_img_count,sizeof(current_img_count));
+			img_position_recorder.close();
 			string current_file_name = *iter;
 			string::size_type b = current_file_name.find_first_of('"');
 			string::size_type e = current_file_name.find_last_of('"');
 			string pure_name = current_file_name.substr(b+1, e-b-1);
 			//string test2 = current_file_name.substr(2,6);
-			string current_file_path = raw_fig_path + pure_name;
-			int loop_stop_flag = 0;
+			string current_file_path = raw_fig_path + pure_name;			
 			img = imread(current_file_path, 1);
 			Mat* raw_img = new Mat;
 			*raw_img = img.clone();
@@ -185,10 +200,11 @@ int main()
 					break;
 				}
 			}
-			if (loop_stop_flag) {
-				break;
-			}
+			if (loop_stop_flag)
+				break;			
 		}
+		if (loop_stop_flag)
+			break;
 	}
 	file_name_str_file.close();
 	waitKey(0);

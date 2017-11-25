@@ -34,7 +34,10 @@ Point last_p1, last_p2; // ºÍ Mat ÀàĞÍ²»Ò»Ñù£¬Mat²»ÄÜÊ¹ÓÃµÈºÅ½øĞĞ¸³Öµ£¬·ñÔòµÄ»°µ
 #define decompose_path "E:\\keti_data\\decompose_fig_2\\"
 #define DECOMPOSE_FLAG 0  //ÓÃÀ´¿ØÖÆÊÇ Ö´ĞĞ ÊÓÆµ×ª»»³ÉÖ¡£¬»¹ÊÇ¶ÔÓÚÃ¿Ö¡µÄ´¦Àí£»
 #define VIDEO_PATH "E:\\FFOutput\\VID_20171109_16414_2.mp4"
-#define file_name_str_path "E:\\keti_data\\file_name_str.txt"
+#define file_name_str_path "E:\\keti_data\\file_name_str.txt" //Í¼ÏñÃû³Æ ÎÄ¼ş Â·¾¶
+#define VECTOR_SIZE 300  // python ´¦ÀíÍ¼ÏñÃû³Æ×Ö·û´®Ê±£¬ÍùÎÄ¼şÖĞÃ¿ĞĞĞ´ÈëµÄ Í¼ÏñÃû³ÆµÄÊıÁ¿£»
+#define IMAGE_POSITION_FILE_PATH  "E:\\keti_data\\img_position.txt"
+#define READ_OUTER_POSITION false
 
 
 int obj2file(Rect* obj_reference, int rect_count, string file_name);
