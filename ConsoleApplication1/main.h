@@ -1,7 +1,7 @@
 #pragma once
-#include<iostream>
-#include<core/core.hpp>
-#include<highgui/highgui.hpp>
+#include <iostream>
+#include <core/core.hpp>
+#include <highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>  
 #include <opencv2/highgui/highgui.hpp>  
 #include <opencv2/imgproc/imgproc.hpp>  
@@ -12,9 +12,9 @@
 #include <string>
 #include <opencv2/opencv.hpp>  
 #include <io.h>
-#include<iostream>  
-#include<fstream>  
-
+#include <iostream>  
+#include <fstream>  
+#include <cstring>
 
 using namespace std;
 using namespace cv;
@@ -33,7 +33,8 @@ Point last_p1, last_p2; // ºÍ Mat ÀàĞÍ²»Ò»Ñù£¬Mat²»ÄÜÊ¹ÓÃµÈºÅ½øĞĞ¸³Öµ£¬·ñÔòµÄ»°µ
 #define raw_fig_path  "E:\\keti_data\\decompose_fig_2\\"    // Ô­Ê¼Í¼Æ¬Â·¾¶
 #define decompose_path "E:\\keti_data\\decompose_fig_2\\"
 #define DECOMPOSE_FLAG 0  //ÓÃÀ´¿ØÖÆÊÇ Ö´ĞĞ ÊÓÆµ×ª»»³ÉÖ¡£¬»¹ÊÇ¶ÔÓÚÃ¿Ö¡µÄ´¦Àí£»
-#define VIDEO_PATH "E:\\FFOutput\\VID_20171109_163650 - 2.avi"
+#define VIDEO_PATH "E:\\FFOutput\\VID_20171109_16414_2.mp4"
+#define file_name_str_path "E:\\keti_data\\file_name_str.txt"
 
 
 int obj2file(Rect* obj_reference, int rect_count, string file_name);
