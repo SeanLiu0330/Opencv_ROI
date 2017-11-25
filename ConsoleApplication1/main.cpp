@@ -232,7 +232,7 @@ void roi_storage(Rect* rect_array, string name_prefix, string storage_dir) {
 
 int video_decompose(){
 	//打开视频文件：其实就是建立一个VideoCapture结构  
-	VideoCapture capture("E:\\FFOutput\\VID_20171109_163650 - 2.avi");
+	VideoCapture capture(VIDEO_PATH);
 	//检测是否正常打开:成功打开时，isOpened返回ture  
 	if (!capture.isOpened())
 		cout << "fail to open!" << endl;
@@ -240,11 +240,11 @@ int video_decompose(){
 	long totalFrameNumber = capture.get(CV_CAP_PROP_FRAME_COUNT);
 	cout << "整个视频共" << totalFrameNumber << "帧" << endl;
 	//设置开始帧()  
-	long frameToStart = 300;
+	long frameToStart = 1;
 	capture.set(CV_CAP_PROP_POS_FRAMES, frameToStart);
 	cout << "从第" << frameToStart << "帧开始读" << endl;
 	//设置结束帧  
-	int frameToStop = 400;
+	int frameToStop = totalFrameNumber;
 	if (frameToStop < frameToStart)
 	{
 		cout << "结束帧小于开始帧，程序错误，即将退出！" << endl;
@@ -305,7 +305,3 @@ int video_decompose(){
 	waitKey(0);
 	return 0;
 }
-//class CaptureROI {
-//	public
-//};
-// tianjia yongyu ceshi de wenzi
