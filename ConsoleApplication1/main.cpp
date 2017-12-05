@@ -19,6 +19,10 @@ void A_on_Mouse(int event, int x, int y, int flags, void*param)//实现画矩形框
 		img.copyTo(showImg);
 		p1 = Point(select.x, select.y);
 		// 获取 正方形的 边框
+		x > img.cols ? x = img.cols : x;
+		y > img.rows ? y = img.rows : y;
+		x < 0 ? x = 0 : x;
+		y < 0 ? y = 0 : y;
 		int x_minus = x - select.x;
 		int y_minus = y - select.y;
 		int mini_minus = mini_abs(x_minus, y_minus);
@@ -119,11 +123,12 @@ int main()
 	string name_str_per_line;
 	int line_count = 0;
 	int current_img_count = 0;
-	int last_final_position = 0;
+	int last_final_position = MANUAL_SETTING_START_POSITION;
 	if (READ_OUTER_POSITION) {
 		// 只有要求读取外面的 position时，才读取
 		ifstream outer_position(IMAGE_POSITION_FILE_PATH);
 		outer_position.read((char*)&last_final_position, sizeof(last_final_position));
+		last_final_position -= 1;
 	}
 	// 逐行读取 文件名，最好
 	while (!file_name_str_file.eof()) {
@@ -140,14 +145,18 @@ int main()
 			file_vector.push_back(single_file_name);
 			name_str_per_line = name_str_per_line.substr(temp_position_4_comma + 1);			
 		}	
-		current_img_count += (line_count-1)*VECTOR_SIZE;
+		current_img_count = (line_count-1)*VECTOR_SIZE;
 		//continue;
 		string file_list[1000]; // 这个是借助 python获得的 文件名 目录，以一个数组的形式提供给这个函数	
 		int start_point = 0;
 		for (vector<string>::iterator iter = file_vector.begin(); iter != file_vector.end(); iter++) {
 			// Mat img, showImg;
 			// 记录当前处理图片的位置
-			current_img_count++;
+			current_img_count++;			
+			if (current_img_count <= last_final_position) {
+				continue;
+			}
+			cout << "current_img: " << current_img_count << endl;
 			ofstream img_position_recorder(IMAGE_POSITION_FILE_PATH);
 			img_position_recorder.write((char*)&current_img_count,sizeof(current_img_count));
 			img_position_recorder.close();
@@ -158,6 +167,7 @@ int main()
 			//string test2 = current_file_name.substr(2,6);
 			string current_file_path = raw_fig_path + pure_name;			
 			img = imread(current_file_path, 1);
+			img.copyTo(img4roi);
 			Mat* raw_img = new Mat;
 			*raw_img = img.clone();
 			img_stack.push(raw_img);
@@ -199,6 +209,32 @@ int main()
 					loop_stop_flag = 1;
 					break;
 				}
+				if (key == 'f'&& iter <= file_vector.end() - 5) {
+					while (!img_stack.empty()) {
+						delete img_stack.top();
+						img_stack.pop();
+					}
+					while (!rect_stack.empty()) {
+						delete rect_stack.top();
+						rect_stack.pop();
+					}
+					iter += 4;
+					current_img_count += 4;
+					break;
+				}
+				if (key == 'b'&& iter>= file_vector.begin()+2) {
+					while (!img_stack.empty()) {
+						delete img_stack.top();
+						img_stack.pop();
+					}
+					while (!rect_stack.empty()) {
+						delete rect_stack.top();
+						rect_stack.pop();
+					}					
+					iter -= 2;
+					current_img_count -= 2;
+					break;
+				}
 			}
 			if (loop_stop_flag)
 				break;			
@@ -221,7 +257,7 @@ void store_capture(Rect* rec_arr, int capture_num, string file_name) {
 		cout << "  file_name_for_roi_of_this_pic: " << current_file_out_path << endl;
 		Rect roi = rec_arr[i];
 		if (roi.width && roi.height) {
-			Mat roi_img = img(roi);
+			Mat roi_img = img4roi(roi);
 			imwrite(current_file_out_path, roi_img);
 		}
 	}
@@ -278,7 +314,7 @@ int video_decompose() {
 	long totalFrameNumber = capture.get(CV_CAP_PROP_FRAME_COUNT);
 	cout << "整个视频共" << totalFrameNumber << "帧" << endl;
 	//设置开始帧()  
-	long frameToStart = 1;
+	long frameToStart = FRAME_TO_START;
 	capture.set(CV_CAP_PROP_POS_FRAMES, frameToStart);
 	cout << "从第" << frameToStart << "帧开始读" << endl;
 	//设置结束帧  
@@ -324,7 +360,7 @@ int video_decompose() {
 		cout << "正在读取第" << currentFrame << "帧" << endl;
 		//waitKey(int delay=0)当delay ≤ 0时会永远等待；当delay>0时会等待delay毫秒  
 		//当时间结束前没有按键按下时，返回值为-1；否则返回按键  
-		int c = waitKey(delay);
+		int c = waitKey(5);
 		//按下ESC或者到达指定的结束帧后退出读取视频  
 		if ((char)c == 27 || currentFrame > frameToStop)
 		{
