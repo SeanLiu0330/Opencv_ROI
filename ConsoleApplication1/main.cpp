@@ -253,7 +253,7 @@ void store_capture(Rect* rec_arr, int capture_num, string file_name) {
 	string file_name_without_suffix = file_name.substr(0, suffix_position);
 	cout << "file_name_without_suffix: " << file_name_without_suffix << endl;
 	for (int i = 0; i < capture_num; i++) {
-		string current_file_out_path = fig_output_path + file_name_without_suffix + '_' + num2char[i] + ".jpg";
+		string current_file_out_path = fig_output_path + date_string + file_name_without_suffix + "_" + num2char[i] + ".jpg";
 		cout << "  file_name_for_roi_of_this_pic: " << current_file_out_path << endl;
 		Rect roi = rec_arr[i];
 		if (roi.width && roi.height) {
